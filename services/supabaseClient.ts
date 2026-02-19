@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// PERBAIKAN: Gunakan nama variabel environment, bukan nilainya langsung
-const supabaseUrl = process.env.SUPABASE_URL;https://hqbbndynqxpuutoxeroe.supabase.co
-const supabaseKey = process.env.SUPABASE_KEY;sb_publishable_gnTtDYngxUXJdArn8ZITpA_hEQpRlgY
+// Gunakan nama variabel environment
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 
 // Log warning jika kredensial tidak ditemukan untuk memudahkan debugging
 if (!supabaseUrl || !supabaseKey) {
