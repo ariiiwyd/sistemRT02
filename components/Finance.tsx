@@ -104,14 +104,15 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors"
             >
                 <Download className="w-5 h-5" />
-                Export Laporan
+                <span className="hidden sm:inline">Export</span>
             </button>
             <button 
             onClick={() => setIsModalOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors"
             >
             <Plus className="w-5 h-5" />
-            Catat Transaksi
+            <span className="hidden sm:inline">Catat Transaksi</span>
+            <span className="sm:hidden">Catat</span>
             </button>
         </div>
       </div>
@@ -151,12 +152,55 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
         </div>
       </div>
 
-      {/* Transaction Table */}
+      {/* Transaction List / Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div className="p-4 border-b border-slate-100 bg-slate-50/50">
           <h3 className="font-semibold text-slate-800">Riwayat Transaksi</h3>
         </div>
-        <div className="overflow-x-auto">
+        
+        {/* MOBILE: Card View */}
+        <div className="block md:hidden">
+            {transactions.length > 0 ? (
+                <div className="divide-y divide-slate-100">
+                    {transactions.map((t) => (
+                        <div key={t.id} className="p-4 flex flex-col gap-2">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="font-semibold text-slate-800 text-sm">{t.description}</p>
+                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded mt-1 inline-block">
+                                        {t.category}
+                                    </span>
+                                </div>
+                                <div className="text-right">
+                                    <p className={`font-bold text-sm ${t.type === 'INCOME' ? 'text-emerald-600' : 'text-red-600'}`}>
+                                        {t.type === 'INCOME' ? '+ ' : '- '}
+                                        {formatCurrency(t.amount)}
+                                    </p>
+                                    <p className="text-xs text-slate-400 mt-1 flex items-center justify-end gap-1">
+                                        <Calendar className="w-3 h-3" /> {t.date}
+                                    </p>
+                                </div>
+                            </div>
+                            {user.role === 'ADMIN' && (
+                                <div className="flex justify-end pt-2">
+                                     <button 
+                                        onClick={() => requestDelete(t.id)}
+                                        className="text-xs text-red-500 flex items-center gap-1 px-2 py-1 hover:bg-red-50 rounded"
+                                    >
+                                        <Trash2 className="w-3 h-3" /> Hapus
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="p-6 text-center text-slate-400 text-sm">Belum ada data transaksi.</div>
+            )}
+        </div>
+
+        {/* DESKTOP: Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 text-slate-500 font-semibold">
               <tr>

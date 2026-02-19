@@ -5,38 +5,24 @@ import { ViewState, User } from '../types';
 interface SidebarProps {
   currentView: ViewState;
   setCurrentView: (view: ViewState) => void;
-  isMobileOpen: boolean;
-  setIsMobileOpen: (isOpen: boolean) => void;
   user: User;
   onLogout: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView, isMobileOpen, setIsMobileOpen, user, onLogout }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView, user, onLogout }) => {
   
   const navItems = [
-    { id: 'DASHBOARD', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'SERVICES', label: 'Layanan RT', icon: Briefcase },
-    { id: 'RESIDENTS', label: 'Data Warga', icon: Users },
-    { id: 'FINANCE', label: 'Kas RT/RW', icon: Wallet },
-    { id: 'ANNOUNCEMENTS', label: 'Pengumuman', icon: Bell },
+    { id: 'DASHBOARD', label: 'Home', icon: LayoutDashboard },
+    { id: 'SERVICES', label: 'Layanan', icon: Briefcase },
+    { id: 'RESIDENTS', label: 'Warga', icon: Users },
+    { id: 'FINANCE', label: 'Kas', icon: Wallet },
+    { id: 'ANNOUNCEMENTS', label: 'Info', icon: Bell },
   ];
 
   return (
     <>
-      {/* Mobile Overlay */}
-      {isMobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
-
-      {/* Sidebar Container */}
-      <div className={`
-        fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white transform transition-transform duration-200 ease-in-out
-        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:inset-auto flex flex-col
-      `}>
+      {/* --- DESKTOP SIDEBAR (Hidden on Mobile) --- */}
+      <div className="hidden lg:flex flex-col w-64 bg-slate-900 text-white h-screen sticky top-0">
         {/* Header */}
         <div className="p-6 border-b border-slate-800 flex items-center gap-3">
             <div className="bg-blue-600 p-2 rounded-lg">
@@ -56,10 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView, isMobile
               return (
                 <button
                   key={item.id}
-                  onClick={() => {
-                    setCurrentView(item.id as ViewState);
-                    setIsMobileOpen(false);
-                  }}
+                  onClick={() => setCurrentView(item.id as ViewState)}
                   className={`
                     w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors
                     ${isActive 
@@ -91,6 +74,43 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView, isMobile
             >
                 <LogOut className="w-4 h-4" />
                 <span>Keluar</span>
+            </button>
+        </div>
+      </div>
+
+      {/* --- MOBILE BOTTOM NAVIGATION (Visible only on Mobile) --- */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 pb-safe pt-2 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div className="flex justify-around items-center">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentView === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setCurrentView(item.id as ViewState)}
+                  className={`
+                    flex flex-col items-center justify-center p-2 rounded-xl transition-all w-16
+                    ${isActive ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}
+                  `}
+                >
+                  <div className={`
+                    p-1.5 rounded-full mb-1 transition-all
+                    ${isActive ? 'bg-blue-50' : 'bg-transparent'}
+                  `}>
+                    <Icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} />
+                  </div>
+                  <span className="text-[10px] font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+             <button
+                onClick={onLogout}
+                className="flex flex-col items-center justify-center p-2 rounded-xl text-red-400 hover:text-red-600 w-16"
+            >
+                <div className="p-1.5 rounded-full mb-1">
+                    <LogOut className="w-6 h-6" />
+                </div>
+                <span className="text-[10px] font-medium">Keluar</span>
             </button>
         </div>
       </div>

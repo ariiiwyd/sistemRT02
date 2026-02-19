@@ -13,7 +13,8 @@ const Dashboard: React.FC<DashboardProps> = ({ residents }) => {
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
 
   const totalResidents = residents.length;
-  const totalKK = Math.ceil(totalResidents / 3); // Approximation for demo
+  // Menghitung KK berdasarkan Nomor KK yang unik
+  const totalKK = new Set(residents.map(r => r.kkNumber)).size;
 
   const maleCount = residents.filter(r => r.gender === Gender.MALE).length;
   const femaleCount = residents.filter(r => r.gender === Gender.FEMALE).length;

@@ -8,7 +8,6 @@ import Finance from './components/Finance';
 import Services from './components/Services';
 import { ViewState, Resident, Announcement, User, Transaction } from './types';
 import { MOCK_RESIDENTS, MOCK_ANNOUNCEMENTS, MOCK_TRANSACTIONS, MOCK_USERS } from './constants';
-import { Menu } from 'lucide-react';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -20,8 +19,6 @@ function App() {
   const [announcements, setAnnouncements] = useState<Announcement[]>(MOCK_ANNOUNCEMENTS);
   const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
   
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const handleLogin = (loggedInUser: User) => {
     setUser(loggedInUser);
     setCurrentView('DASHBOARD');
@@ -68,24 +65,23 @@ function App() {
       <Sidebar 
         currentView={currentView} 
         setCurrentView={setCurrentView} 
-        isMobileOpen={isMobileMenuOpen}
-        setIsMobileOpen={setIsMobileMenuOpen}
         user={user}
         onLogout={handleLogout}
       />
       
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Mobile Header */}
-        <div className="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between">
-           <div className="font-bold text-lg text-slate-800">SiPintar</div>
-           <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
-             <Menu className="w-6 h-6" />
-           </button>
-        </div>
-
         {/* Main Content Area */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8">
+        {/* pb-24 added to ensure content is not hidden behind the mobile bottom nav */}
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 pb-24 lg:pb-8">
           <div className="max-w-7xl mx-auto">
+             {/* Mobile Header Title Only (No Menu Button) */}
+             <div className="lg:hidden mb-6 flex items-center gap-2">
+                 <div className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold">
+                    Si
+                 </div>
+                 <h1 className="text-xl font-bold text-slate-800">SiPintar RT/RW</h1>
+             </div>
+
              {renderContent()}
           </div>
         </main>

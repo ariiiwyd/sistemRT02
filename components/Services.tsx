@@ -333,7 +333,8 @@ const Services: React.FC<ServicesProps> = ({ residents, user }) => {
                     </div>
                      <div className="bg-emerald-50 p-4 rounded-xl">
                         <p className="text-xs text-emerald-600 font-bold uppercase">Kepala Keluarga</p>
-                        <p className="text-3xl font-bold text-emerald-800 mt-1">{Math.ceil(residents.length / 3)}</p>
+                        {/* Calculate unique KK numbers */}
+                        <p className="text-3xl font-bold text-emerald-800 mt-1">{new Set(residents.map(r => r.kkNumber)).size}</p>
                     </div>
                 </div>
 
@@ -593,6 +594,10 @@ const Services: React.FC<ServicesProps> = ({ residents, user }) => {
                                     <tr>
                                         <td className="w-40 py-1">NIK</td>
                                         <td className="font-bold">: {selectedResident.nik}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="w-40 py-1">No. KK</td>
+                                        <td className="font-bold">: {selectedResident.kkNumber}</td>
                                     </tr>
                                     <tr>
                                         <td className="w-40 py-1">Jenis Kelamin</td>

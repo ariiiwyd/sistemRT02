@@ -12,6 +12,7 @@ export enum MaritalStatus {
 export interface Resident {
   id: string;
   nik: string;
+  kkNumber: string; // Menambahkan Nomor KK
   name: string;
   gender: Gender;
   birthDate: string;
@@ -19,7 +20,7 @@ export interface Resident {
   job: string;
   status: MaritalStatus;
   phone: string;
-  photoUrl?: string; // Menambahkan properti foto
+  photoUrl?: string;
 }
 
 export enum DocumentType {

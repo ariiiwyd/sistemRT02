@@ -19,6 +19,7 @@ export const MOCK_RESIDENTS: Resident[] = [
   {
     id: '1',
     nik: '3171012001900001',
+    kkNumber: '3171012001900001',
     name: 'Budi Santoso',
     gender: Gender.MALE,
     birthDate: '1990-01-20',
@@ -30,6 +31,7 @@ export const MOCK_RESIDENTS: Resident[] = [
   {
     id: '2',
     nik: '3171015505920002',
+    kkNumber: '3171012001900001', // Sama dengan Budi (Satu KK)
     name: 'Siti Aminah',
     gender: Gender.FEMALE,
     birthDate: '1992-05-15',
@@ -41,6 +43,7 @@ export const MOCK_RESIDENTS: Resident[] = [
   {
     id: '3',
     nik: '3171011010850003',
+    kkNumber: '3171011010850002',
     name: 'Agus Setiawan',
     gender: Gender.MALE,
     birthDate: '1985-10-10',
@@ -52,6 +55,7 @@ export const MOCK_RESIDENTS: Resident[] = [
   {
     id: '4',
     nik: '3171016512700004',
+    kkNumber: '3171016512700003',
     name: 'Ratna Sari',
     gender: Gender.FEMALE,
     birthDate: '1970-12-25',
@@ -63,6 +67,7 @@ export const MOCK_RESIDENTS: Resident[] = [
   {
     id: '5',
     nik: '3171012008000005',
+    kkNumber: '3171012008000004',
     name: 'Joko Widodo',
     gender: Gender.MALE,
     birthDate: '2000-08-20',
