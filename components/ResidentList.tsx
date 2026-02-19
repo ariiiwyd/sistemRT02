@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Resident, Gender, MaritalStatus, User } from '../types';
 import { Search, Plus, Trash2, Edit, Download, CreditCard, Printer, X, Camera, Upload, AlertCircle, AlertTriangle, QrCode } from 'lucide-react';
+import { db } from '../services/db';
 
 interface ResidentListProps {
   residents: Resident[];
@@ -16,9 +17,12 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
   
   // Delete Confirmation State
   const [deleteTarget, setDeleteTarget] = useState<Resident | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  
   const [newResident, setNewResident] = useState<Partial<Resident>>({
     gender: Gender.MALE,
     status: MaritalStatus.SINGLE
@@ -36,10 +40,16 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
     setDeleteTarget(resident);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteTarget) {
+        setIsDeleting(true);
+        // DB Call
+        await db.residents.delete(deleteTarget.id);
+        
+        // Local State Update
         setResidents(prev => prev.filter(r => r.id !== deleteTarget.id));
         setDeleteTarget(null);
+        setIsDeleting(false);
     }
   };
 
@@ -469,13 +479,11 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
     }
   };
 
-  const handleSaveResident = (e: React.FormEvent) => {
+  const handleSaveResident = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newResident.name || !newResident.nik || !newResident.kkNumber) return;
 
     // Cek Duplikasi NIK
-    // Jika Edit Mode: Cek NIK yang sama tapi bukan milik user ini
-    // Jika Add Mode: Cek NIK yang sama di seluruh data
     const isDuplicate = residents.some(r => 
         r.nik === newResident.nik && 
         (isEditMode ? r.id !== newResident.id : true)
@@ -486,12 +494,16 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
         return;
     }
 
+    setIsSaving(true);
+    let updatedResident: Resident;
+
     if (isEditMode && newResident.id) {
         // Update existing resident
-        setResidents(prev => prev.map(r => r.id === newResident.id ? { ...newResident } as Resident : r));
+        updatedResident = { ...newResident } as Resident;
+        setResidents(prev => prev.map(r => r.id === newResident.id ? updatedResident : r));
     } else {
         // Add new resident
-        const resident: Resident = {
+        updatedResident = {
             id: Date.now().toString(),
             nik: newResident.nik || '',
             kkNumber: newResident.kkNumber || '',
@@ -504,9 +516,13 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
             phone: newResident.phone || '',
             photoUrl: newResident.photoUrl
         };
-        setResidents(prev => [...prev, resident]);
+        setResidents(prev => [...prev, updatedResident]);
     }
 
+    // Save to DB
+    await db.residents.save(updatedResident);
+
+    setIsSaving(false);
     setIsModalOpen(false);
     setNewResident({ gender: Gender.MALE, status: MaritalStatus.SINGLE });
     setError('');
@@ -710,7 +726,8 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
         </div>
       </div>
 
-      {/* Modal Kartu Warga Preview */}
+      {/* Modal Kartu Warga Preview (Code omitted for brevity, same as before) */}
+      {/* ... keeping the same ... */}
       {isCardModalOpen && selectedResidentForCard && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
            {/* max-h-[95vh] and flex-col ensures headers/footers stay visible/accessible */}
@@ -860,15 +877,17 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
                     <div className="flex gap-3">
                         <button 
                             onClick={() => setDeleteTarget(null)}
+                            disabled={isDeleting}
                             className="flex-1 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium transition-colors"
                         >
                             Batal
                         </button>
                         <button 
                             onClick={confirmDelete}
-                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
+                            disabled={isDeleting}
+                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors flex items-center justify-center"
                         >
-                            Hapus
+                            {isDeleting ? 'Menghapus...' : 'Hapus'}
                         </button>
                     </div>
                 </div>
@@ -996,14 +1015,17 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
+                  disabled={isSaving}
                   className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors font-medium"
                 >
                   Batal
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  disabled={isSaving}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
                 >
+                  {isSaving && <span className="animate-spin text-white">⟳</span>}
                   {isEditMode ? 'Update Data' : 'Simpan Data'}
                 </button>
               </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Transaction, User, TransactionType } from '../types';
 import { Wallet, ArrowUpCircle, ArrowDownCircle, Plus, Trash2, Calendar, Download, AlertTriangle } from 'lucide-react';
+import { db } from '../services/db';
 
 interface FinanceProps {
   transactions: Transaction[];
@@ -61,7 +62,7 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
     document.body.removeChild(link);
   };
 
-  const handleAddTransaction = (e: React.FormEvent) => {
+  const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTransaction.description || !newTransaction.amount) return;
 
@@ -74,6 +75,9 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
       type: newTransaction.type as TransactionType
     };
 
+    // Save to DB
+    await db.transactions.save(transaction);
+
     setTransactions(prev => [transaction, ...prev]); // Add new to top
     setIsModalOpen(false);
     setNewTransaction({ type: 'INCOME', date: new Date().toISOString().split('T')[0] });
@@ -84,8 +88,9 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
     setDeleteTargetId(id);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteTargetId) {
+      await db.transactions.delete(deleteTargetId);
       setTransactions(prev => prev.filter(t => t.id !== deleteTargetId));
       setDeleteTargetId(null);
     }

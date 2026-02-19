@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Announcement } from '../types';
 import { Sparkles, Send, Bell } from 'lucide-react';
 import { generateAnnouncement } from '../services/geminiService';
+import { db } from '../services/db';
 
 interface AnnouncementsProps {
   announcements: Announcement[];
@@ -13,6 +14,7 @@ const Announcements: React.FC<AnnouncementsProps> = ({ announcements, setAnnounc
   const [tone, setTone] = useState<'formal' | 'santai' | 'penting'>('formal');
   const [generatedText, setGeneratedText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const handleGenerate = async () => {
     if (!topic) return;
@@ -22,8 +24,10 @@ const Announcements: React.FC<AnnouncementsProps> = ({ announcements, setAnnounc
     setIsGenerating(false);
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (!generatedText) return;
+    setIsPublishing(true);
+    
     const newAnnouncement: Announcement = {
       id: Date.now().toString(),
       title: topic || 'Pengumuman Baru',
@@ -31,9 +35,16 @@ const Announcements: React.FC<AnnouncementsProps> = ({ announcements, setAnnounc
       date: new Date().toISOString().split('T')[0],
       isAIGenerated: true
     };
+
+    // Save to DB
+    await db.announcements.save(newAnnouncement);
+    
+    // Update Local State
     setAnnouncements(prev => [newAnnouncement, ...prev]);
+    
     setTopic('');
     setGeneratedText('');
+    setIsPublishing(false);
   };
 
   return (
@@ -109,10 +120,15 @@ const Announcements: React.FC<AnnouncementsProps> = ({ announcements, setAnnounc
                     />
                     <button
                         onClick={handlePublish}
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+                        disabled={isPublishing}
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-70"
                     >
-                        <Send className="w-4 h-4" />
-                        Terbitkan Pengumuman
+                        {isPublishing ? (
+                             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        ) : (
+                             <Send className="w-4 h-4" />
+                        )}
+                        {isPublishing ? 'Menerbitkan...' : 'Terbitkan Pengumuman'}
                     </button>
                 </div>
             )}

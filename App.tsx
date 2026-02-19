@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import ResidentList from './components/ResidentList';
@@ -7,18 +7,54 @@ import Login from './components/Login';
 import Finance from './components/Finance';
 import Services from './components/Services';
 import { ViewState, Resident, Announcement, User, Transaction } from './types';
-import { MOCK_RESIDENTS, MOCK_ANNOUNCEMENTS, MOCK_TRANSACTIONS, MOCK_USERS } from './constants';
+import { MOCK_USERS } from './constants';
+import { db } from './services/db';
+
+// Key untuk LocalStorage (Hanya untuk Users/Auth sementara)
+const STORAGE_KEYS = {
+  USERS: 'sipintar_users',
+};
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<ViewState>('DASHBOARD');
   
-  // State Data
-  const [users, setUsers] = useState<User[]>(MOCK_USERS); // Manage users state here for password updates
-  const [residents, setResidents] = useState<Resident[]>(MOCK_RESIDENTS);
-  const [announcements, setAnnouncements] = useState<Announcement[]>(MOCK_ANNOUNCEMENTS);
-  const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
+  // --- STATE INITIALIZATION ---
   
+  // 1. Users (Tetap di LocalStorage untuk Demo ini karena Auth kompleks)
+  const [users, setUsers] = useState<User[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.USERS);
+    return saved ? JSON.parse(saved) : MOCK_USERS;
+  });
+
+  // 2. Data from Database
+  const [residents, setResidents] = useState<Resident[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  
+  // --- LOAD DATA FROM DB ---
+  useEffect(() => {
+    const loadData = async () => {
+        const residentsData = await db.residents.getAll();
+        setResidents(residentsData);
+
+        const announcementsData = await db.announcements.getAll();
+        setAnnouncements(announcementsData);
+
+        const transactionsData = await db.transactions.getAll();
+        setTransactions(transactionsData);
+    };
+    loadData();
+  }, []); // Run once on mount
+
+  // --- PERSISTENCE FOR USERS ONLY ---
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+  }, [users]);
+
+
+  // --- HANDLERS ---
+
   const handleLogin = (loggedInUser: User) => {
     setUser(loggedInUser);
     setCurrentView('DASHBOARD');
