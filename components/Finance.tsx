@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Transaction, User, TransactionType } from '../types';
-import { Wallet, ArrowUpCircle, ArrowDownCircle, Plus, Trash2, Calendar, Download } from 'lucide-react';
+import { Wallet, ArrowUpCircle, ArrowDownCircle, Plus, Trash2, Calendar, Download, AlertTriangle } from 'lucide-react';
 
 interface FinanceProps {
   transactions: Transaction[];
@@ -10,6 +10,9 @@ interface FinanceProps {
 
 const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // State untuk modal konfirmasi hapus
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  
   const [newTransaction, setNewTransaction] = useState<Partial<Transaction>>({
     type: 'INCOME',
     date: new Date().toISOString().split('T')[0]
@@ -76,10 +79,15 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
     setNewTransaction({ type: 'INCOME', date: new Date().toISOString().split('T')[0] });
   };
 
-  const handleDelete = (id: string) => {
+  const requestDelete = (id: string) => {
     if (user.role !== 'ADMIN') return;
-    if (confirm('Hapus data transaksi ini?')) {
-      setTransactions(prev => prev.filter(t => t.id !== id));
+    setDeleteTargetId(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTargetId) {
+      setTransactions(prev => prev.filter(t => t.id !== deleteTargetId));
+      setDeleteTargetId(null);
     }
   };
 
@@ -182,7 +190,7 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
                   <td className="px-6 py-4 text-right">
                     {user.role === 'ADMIN' && (
                       <button 
-                        onClick={() => handleDelete(t.id)}
+                        onClick={() => requestDelete(t.id)}
                         className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Hapus Transaksi"
                       >
@@ -309,6 +317,37 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Modal Delete Confirmation */}
+      {deleteTargetId && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                <div className="text-center">
+                    <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <AlertTriangle className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">Hapus Transaksi?</h3>
+                    <p className="text-sm text-slate-500 mb-6">
+                        Anda akan menghapus data transaksi ini. Tindakan ini tidak dapat dibatalkan.
+                    </p>
+                    <div className="flex gap-3">
+                        <button 
+                            onClick={() => setDeleteTargetId(null)}
+                            className="flex-1 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium transition-colors"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            onClick={confirmDelete}
+                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
+                        >
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
       )}
     </div>

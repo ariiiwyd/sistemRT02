@@ -7,15 +7,19 @@ import Login from './components/Login';
 import Finance from './components/Finance';
 import Services from './components/Services';
 import { ViewState, Resident, Announcement, User, Transaction } from './types';
-import { MOCK_RESIDENTS, MOCK_ANNOUNCEMENTS, MOCK_TRANSACTIONS } from './constants';
+import { MOCK_RESIDENTS, MOCK_ANNOUNCEMENTS, MOCK_TRANSACTIONS, MOCK_USERS } from './constants';
 import { Menu } from 'lucide-react';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<ViewState>('DASHBOARD');
+  
+  // State Data
+  const [users, setUsers] = useState<User[]>(MOCK_USERS); // Manage users state here for password updates
   const [residents, setResidents] = useState<Resident[]>(MOCK_RESIDENTS);
   const [announcements, setAnnouncements] = useState<Announcement[]>(MOCK_ANNOUNCEMENTS);
   const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogin = (loggedInUser: User) => {
@@ -26,6 +30,10 @@ function App() {
   const handleLogout = () => {
     setUser(null);
     setCurrentView('DASHBOARD');
+  };
+
+  const handleUpdateUser = (updatedUser: User) => {
+    setUsers(prev => prev.map(u => u.username === updatedUser.username ? updatedUser : u));
   };
 
   const renderContent = () => {
@@ -46,7 +54,13 @@ function App() {
   };
 
   if (!user) {
-    return <Login onLogin={handleLogin} />;
+    return (
+      <Login 
+        onLogin={handleLogin} 
+        users={users} 
+        onUpdateUser={handleUpdateUser} 
+      />
+    );
   }
 
   return (

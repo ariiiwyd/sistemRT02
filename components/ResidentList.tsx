@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Resident, Gender, MaritalStatus, User } from '../types';
-import { Search, Plus, Trash2, Edit, Download, CreditCard, Printer, X, Camera, Upload, AlertCircle } from 'lucide-react';
+import { Search, Plus, Trash2, Edit, Download, CreditCard, Printer, X, Camera, Upload, AlertCircle, AlertTriangle } from 'lucide-react';
 
 interface ResidentListProps {
   residents: Resident[];
@@ -14,6 +14,9 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
   const [selectedResidentForCard, setSelectedResidentForCard] = useState<Resident | null>(null);
   
+  // Delete Confirmation State
+  const [deleteTarget, setDeleteTarget] = useState<Resident | null>(null);
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [error, setError] = useState('');
   const [newResident, setNewResident] = useState<Partial<Resident>>({
@@ -27,10 +30,15 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
     r.address.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleDelete = (id: string) => {
+  const requestDelete = (resident: Resident) => {
     if (user.role !== 'ADMIN') return;
-    if (confirm('Apakah anda yakin ingin menghapus data warga ini?')) {
-      setResidents(prev => prev.filter(r => r.id !== id));
+    setDeleteTarget(resident);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+        setResidents(prev => prev.filter(r => r.id !== deleteTarget.id));
+        setDeleteTarget(null);
     }
   };
 
@@ -266,7 +274,7 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
                         </button>
                         {user.role === 'ADMIN' && (
                           <button 
-                            onClick={() => handleDelete(resident.id)}
+                            onClick={() => requestDelete(resident)}
                             className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             title="Hapus Data"
                           >
@@ -378,6 +386,37 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
                   </button>
               </div>
            </div>
+        </div>
+      )}
+
+      {/* Modal Delete Confirmation */}
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                <div className="text-center">
+                    <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <AlertTriangle className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">Hapus Data Warga?</h3>
+                    <p className="text-sm text-slate-500 mb-6">
+                        Anda akan menghapus data <strong>{deleteTarget.name}</strong>. Tindakan ini tidak dapat dibatalkan.
+                    </p>
+                    <div className="flex gap-3">
+                        <button 
+                            onClick={() => setDeleteTarget(null)}
+                            className="flex-1 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium transition-colors"
+                        >
+                            Batal
+                        </button>
+                        <button 
+                            onClick={confirmDelete}
+                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
+                        >
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
       )}
 
