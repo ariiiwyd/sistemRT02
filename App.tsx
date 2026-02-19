@@ -2,20 +2,18 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import ResidentList from './components/ResidentList';
-import Documents from './components/Documents';
 import Announcements from './components/Announcements';
-import AIChat from './components/AIChat';
 import Login from './components/Login';
 import Finance from './components/Finance';
-import { ViewState, Resident, DocumentRequest, Announcement, User, Transaction } from './types';
-import { MOCK_RESIDENTS, MOCK_REQUESTS, MOCK_ANNOUNCEMENTS, MOCK_TRANSACTIONS } from './constants';
+import Services from './components/Services';
+import { ViewState, Resident, Announcement, User, Transaction } from './types';
+import { MOCK_RESIDENTS, MOCK_ANNOUNCEMENTS, MOCK_TRANSACTIONS } from './constants';
 import { Menu } from 'lucide-react';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<ViewState>('DASHBOARD');
   const [residents, setResidents] = useState<Resident[]>(MOCK_RESIDENTS);
-  const [requests, setRequests] = useState<DocumentRequest[]>(MOCK_REQUESTS);
   const [announcements, setAnnouncements] = useState<Announcement[]>(MOCK_ANNOUNCEMENTS);
   const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,19 +31,17 @@ function App() {
   const renderContent = () => {
     switch (currentView) {
       case 'DASHBOARD':
-        return <Dashboard residents={residents} requests={requests} />;
+        return <Dashboard residents={residents} />;
+      case 'SERVICES':
+        return <Services residents={residents} user={user!} />;
       case 'RESIDENTS':
         return <ResidentList residents={residents} setResidents={setResidents} user={user!} />;
-      case 'DOCUMENTS':
-        return <Documents requests={requests} setRequests={setRequests} />;
       case 'FINANCE':
         return <Finance transactions={transactions} setTransactions={setTransactions} user={user!} />;
       case 'ANNOUNCEMENTS':
         return <Announcements announcements={announcements} setAnnouncements={setAnnouncements} />;
-      case 'AI_ASSISTANT':
-        return <AIChat />;
       default:
-        return <Dashboard residents={residents} requests={requests} />;
+        return <Dashboard residents={residents} />;
     }
   };
 

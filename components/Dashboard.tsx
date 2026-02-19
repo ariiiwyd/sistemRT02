@@ -1,22 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Resident, DocumentRequest, RequestStatus, Gender } from '../types';
+import React, { useState } from 'react';
+import { Resident, Gender } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
-import { Users, FileText, CheckCircle, Clock } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { analyzeDemographics } from '../services/geminiService';
 
 interface DashboardProps {
   residents: Resident[];
-  requests: DocumentRequest[];
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ residents, requests }) => {
+const Dashboard: React.FC<DashboardProps> = ({ residents }) => {
   const [aiAnalysis, setAiAnalysis] = useState<string>("");
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
 
   const totalResidents = residents.length;
   const totalKK = Math.ceil(totalResidents / 3); // Approximation for demo
-  const pendingRequests = requests.filter(r => r.status === RequestStatus.PENDING).length;
-  const approvedRequests = requests.filter(r => r.status === RequestStatus.APPROVED).length;
 
   const maleCount = residents.filter(r => r.gender === Gender.MALE).length;
   const femaleCount = residents.filter(r => r.gender === Gender.FEMALE).length;
@@ -68,11 +65,9 @@ const Dashboard: React.FC<DashboardProps> = ({ residents, requests }) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StatCard title="Total Warga" value={totalResidents} icon={Users} color="bg-blue-500" />
         <StatCard title="Total KK" value={totalKK} icon={Users} color="bg-indigo-500" />
-        <StatCard title="Surat Pending" value={pendingRequests} icon={Clock} color="bg-orange-500" />
-        <StatCard title="Surat Selesai" value={approvedRequests} icon={CheckCircle} color="bg-emerald-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

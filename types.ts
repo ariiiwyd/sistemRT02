@@ -19,6 +19,7 @@ export interface Resident {
   job: string;
   status: MaritalStatus;
   phone: string;
+  photoUrl?: string; // Menambahkan properti foto
 }
 
 export enum DocumentType {
@@ -72,4 +73,4 @@ export interface Transaction {
   type: TransactionType;
 }
 
-export type ViewState = 'DASHBOARD' | 'RESIDENTS' | 'DOCUMENTS' | 'ANNOUNCEMENTS' | 'AI_ASSISTANT' | 'FINANCE';
+export type ViewState = 'DASHBOARD' | 'RESIDENTS' | 'ANNOUNCEMENTS' | 'FINANCE' | 'SERVICES';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, FileText, Bell, Bot, LogOut, Wallet } from 'lucide-react';
+import { LayoutDashboard, Users, Bell, LogOut, Wallet, Briefcase } from 'lucide-react';
 import { ViewState, User } from '../types';
 
 interface SidebarProps {
@@ -15,11 +15,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView, isMobile
   
   const navItems = [
     { id: 'DASHBOARD', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'SERVICES', label: 'Layanan RT', icon: Briefcase },
     { id: 'RESIDENTS', label: 'Data Warga', icon: Users },
-    { id: 'DOCUMENTS', label: 'Layanan Surat', icon: FileText },
     { id: 'FINANCE', label: 'Kas RT/RW', icon: Wallet },
     { id: 'ANNOUNCEMENTS', label: 'Pengumuman', icon: Bell },
-    { id: 'AI_ASSISTANT', label: 'Asisten Pintar', icon: Bot },
   ];
 
   return (
@@ -83,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView, isMobile
                 </div>
                 <div className="overflow-hidden">
                     <p className="text-sm font-medium text-white truncate">{user.name}</p>
-                    <p className="text-xs text-slate-400 uppercase tracking-wider">{user.role}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wider">{user.role === 'ADMIN' ? 'KETUA RT' : user.role}</p>
                 </div>
             </div>
             <button 

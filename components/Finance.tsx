@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Transaction, User, TransactionType } from '../types';
-import { Wallet, ArrowUpCircle, ArrowDownCircle, Plus, Trash2, Calendar } from 'lucide-react';
+import { Wallet, ArrowUpCircle, ArrowDownCircle, Plus, Trash2, Calendar, Download } from 'lucide-react';
 
 interface FinanceProps {
   transactions: Transaction[];
@@ -31,6 +31,31 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
       currency: 'IDR',
       minimumFractionDigits: 0
     }).format(amount);
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['ID', 'Tanggal', 'Keterangan', 'Kategori', 'Tipe', 'Nominal'];
+    const csvContent = [
+      headers.join(','),
+      ...transactions.map(t => [
+        `"${t.id}"`,
+        `"${t.date}"`,
+        `"${t.description}"`,
+        `"${t.category}"`,
+        `"${t.type}"`,
+        `"${t.amount}"`
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `laporan_keuangan_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleAddTransaction = (e: React.FormEvent) => {
@@ -65,13 +90,22 @@ const Finance: React.FC<FinanceProps> = ({ transactions, setTransactions, user }
           <h2 className="text-2xl font-bold text-slate-800">Kas RT/RW</h2>
           <p className="text-slate-500 text-sm">Laporan keuangan transparan</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Catat Transaksi
-        </button>
+        <div className="flex gap-2">
+            <button 
+                onClick={handleExportCSV}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors"
+            >
+                <Download className="w-5 h-5" />
+                Export Laporan
+            </button>
+            <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors"
+            >
+            <Plus className="w-5 h-5" />
+            Catat Transaksi
+            </button>
+        </div>
       </div>
 
       {/* Summary Cards */}

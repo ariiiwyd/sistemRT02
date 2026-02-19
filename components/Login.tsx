@@ -97,14 +97,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               </>
             )}
           </button>
-
-          <div className="text-center">
-            <p className="text-xs text-slate-400">
-              Gunakan akun demo:<br/>
-              Admin: <b>admin</b> / password123<br/>
-              Staff: <b>staff</b> / password123
-            </p>
-          </div>
         </form>
       </div>
     </div>

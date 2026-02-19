@@ -4,7 +4,7 @@ export const MOCK_USERS = [
   {
     username: 'admin',
     password: 'password123', // Hardcoded for demo
-    name: 'Bapak Ketua RW',
+    name: 'Bapak Ketua RT',
     role: 'ADMIN' as const
   },
   {
@@ -22,7 +22,7 @@ export const MOCK_RESIDENTS: Resident[] = [
     name: 'Budi Santoso',
     gender: Gender.MALE,
     birthDate: '1990-01-20',
-    address: 'Jl. Merpati No. 4B, RT 01/02',
+    address: 'Jl. Merpati No. 4B, RT 002/006',
     job: 'Wiraswasta',
     status: MaritalStatus.MARRIED,
     phone: '081234567890'
@@ -33,7 +33,7 @@ export const MOCK_RESIDENTS: Resident[] = [
     name: 'Siti Aminah',
     gender: Gender.FEMALE,
     birthDate: '1992-05-15',
-    address: 'Jl. Merpati No. 4B, RT 01/02',
+    address: 'Jl. Merpati No. 4B, RT 002/006',
     job: 'Ibu Rumah Tangga',
     status: MaritalStatus.MARRIED,
     phone: '081234567891'
@@ -44,7 +44,7 @@ export const MOCK_RESIDENTS: Resident[] = [
     name: 'Agus Setiawan',
     gender: Gender.MALE,
     birthDate: '1985-10-10',
-    address: 'Jl. Kutilang No. 10, RT 02/02',
+    address: 'Jl. Kutilang No. 10, RT 002/006',
     job: 'PNS',
     status: MaritalStatus.SINGLE,
     phone: '081234567892'
@@ -55,7 +55,7 @@ export const MOCK_RESIDENTS: Resident[] = [
     name: 'Ratna Sari',
     gender: Gender.FEMALE,
     birthDate: '1970-12-25',
-    address: 'Jl. Elang No. 5, RT 03/02',
+    address: 'Jl. Elang No. 5, RT 002/006',
     job: 'Pedagang',
     status: MaritalStatus.DIVORCED,
     phone: '081234567893'
@@ -66,7 +66,7 @@ export const MOCK_RESIDENTS: Resident[] = [
     name: 'Joko Widodo',
     gender: Gender.MALE,
     birthDate: '2000-08-20',
-    address: 'Jl. Pipit No. 12, RT 01/02',
+    address: 'Jl. Pipit No. 12, RT 002/006',
     job: 'Mahasiswa',
     status: MaritalStatus.SINGLE,
     phone: '081234567894'
@@ -97,7 +97,7 @@ export const MOCK_ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'A1',
     title: 'Kerja Bakti Minggu Ini',
-    content: 'Diberitahukan kepada seluruh warga RT 02 RW 05 untuk mengikuti kegiatan kerja bakti membersihkan lingkungan pada hari Minggu, 29 Oktober 2023 pukul 07.00 WIB. Diharapkan membawa peralatan kebersihan masing-masing.',
+    content: 'Diberitahukan kepada seluruh warga RT 002 RW 006 untuk mengikuti kegiatan kerja bakti membersihkan lingkungan pada hari Minggu, 29 Oktober 2023 pukul 07.00 WIB. Diharapkan membawa peralatan kebersihan masing-masing.',
     date: '2023-10-25',
     isAIGenerated: false
   },
