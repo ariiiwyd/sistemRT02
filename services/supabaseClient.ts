@@ -1,13 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.https://hqbbndynqxpuutoxeroe.supabase.co;
-const supabaseKey = process.env.sb_publishable_gnTtDYngxUXJdArn8ZITpA_hEQpRlgY;
+// PERBAIKAN: Gunakan nama variabel environment, bukan nilainya langsung
+const supabaseUrl = process.env.SUPABASE_URL;https://hqbbndynqxpuutoxeroe.supabase.co
+const supabaseKey = process.env.SUPABASE_KEY;sb_publishable_gnTtDYngxUXJdArn8ZITpA_hEQpRlgY
 
 // Log warning jika kredensial tidak ditemukan untuk memudahkan debugging
 if (!supabaseUrl || !supabaseKey) {
     console.warn(
         "⚠️ Supabase belum dikonfigurasi. Aplikasi berjalan dalam mode Offline (LocalStorage).\n" +
-        "Silakan isi SUPABASE_URL dan SUPABASE_KEY di file .env"
+        "Silakan isi SUPABASE_URL dan SUPABASE_KEY di file .env atau Environment Variables Vercel."
     );
 }
 
