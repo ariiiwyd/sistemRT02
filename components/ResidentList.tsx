@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Resident, Gender, MaritalStatus, User } from '../types';
-import { Search, Plus, Trash2, Edit, Download, IdCard, Printer, X, Camera, Upload } from 'lucide-react';
+import { Search, Plus, Trash2, Edit, Download, CreditCard, Printer, X, Camera, Upload, AlertCircle } from 'lucide-react';
 
 interface ResidentListProps {
   residents: Resident[];
@@ -15,6 +15,7 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
   const [selectedResidentForCard, setSelectedResidentForCard] = useState<Resident | null>(null);
   
   const [isEditMode, setIsEditMode] = useState(false);
+  const [error, setError] = useState('');
   const [newResident, setNewResident] = useState<Partial<Resident>>({
     gender: Gender.MALE,
     status: MaritalStatus.SINGLE
@@ -36,6 +37,7 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
   const handleEdit = (resident: Resident) => {
     setNewResident(resident);
     setIsEditMode(true);
+    setError('');
     setIsModalOpen(true);
   };
 
@@ -106,6 +108,7 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
   const handleOpenAddModal = () => {
     setNewResident({ gender: Gender.MALE, status: MaritalStatus.SINGLE });
     setIsEditMode(false);
+    setError('');
     setIsModalOpen(true);
   };
 
@@ -123,6 +126,19 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
   const handleSaveResident = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newResident.name || !newResident.nik) return;
+
+    // Cek Duplikasi NIK
+    // Jika Edit Mode: Cek NIK yang sama tapi bukan milik user ini
+    // Jika Add Mode: Cek NIK yang sama di seluruh data
+    const isDuplicate = residents.some(r => 
+        r.nik === newResident.nik && 
+        (isEditMode ? r.id !== newResident.id : true)
+    );
+
+    if (isDuplicate) {
+        setError('NIK sudah terdaftar! Mohon periksa kembali data Anda.');
+        return;
+    }
 
     if (isEditMode && newResident.id) {
         // Update existing resident
@@ -146,6 +162,7 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
 
     setIsModalOpen(false);
     setNewResident({ gender: Gender.MALE, status: MaritalStatus.SINGLE });
+    setError('');
   };
 
   return (
@@ -238,7 +255,7 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
                             className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                             title="Lihat Kartu Anggota"
                         >
-                          <IdCard className="w-4 h-4" />
+                          <CreditCard className="w-4 h-4" />
                         </button>
                         <button 
                             onClick={() => handleEdit(resident)}
@@ -278,7 +295,7 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
            <div className="bg-white rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
               <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                   <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                    <IdCard className="w-5 h-5 text-blue-600" />
+                    <CreditCard className="w-5 h-5 text-blue-600" />
                     Kartu Tanda Warga
                   </h3>
                   <button onClick={() => setIsCardModalOpen(false)} className="text-slate-400 hover:text-slate-600">
@@ -375,6 +392,14 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
             </div>
             <form onSubmit={handleSaveResident} className="p-6 space-y-4">
               
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    {error}
+                </div>
+              )}
+
               {/* Photo Upload Section */}
               <div className="flex justify-center mb-6">
                 <div className="relative group">
@@ -399,11 +424,12 @@ const ResidentList: React.FC<ResidentListProps> = ({ residents, setResidents, us
                     type="text" 
                     required 
                     maxLength={16}
-                    className="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none" 
+                    className={`w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none ${error && error.includes('NIK') ? 'border-red-500 bg-red-50' : 'border-slate-300'}`} 
                     value={newResident.nik || ''} 
                     onChange={e => {
                         const val = e.target.value.replace(/\D/g, ''); // Hanya angka
-                        setNewResident({...newResident, nik: val})
+                        setNewResident({...newResident, nik: val});
+                        if (error) setError(''); // Clear error on type
                     }}
                   />
                 </div>

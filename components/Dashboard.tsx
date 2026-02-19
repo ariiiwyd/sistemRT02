@@ -74,7 +74,8 @@ const Dashboard: React.FC<DashboardProps> = ({ residents }) => {
         {/* Gender Chart */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <h3 className="text-lg font-semibold text-slate-800 mb-4">Komposisi Gender</h3>
-          <div className="h-64">
+          {/* w-full and min-h-[1px] helps prevents Recharts dimension issues */}
+          <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -101,7 +102,8 @@ const Dashboard: React.FC<DashboardProps> = ({ residents }) => {
         {/* Age Chart */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <h3 className="text-lg font-semibold text-slate-800 mb-4">Distribusi Usia</h3>
-          <div className="h-64">
+          {/* w-full and min-h-[1px] helps prevents Recharts dimension issues */}
+          <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={ageData}>
                 <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
