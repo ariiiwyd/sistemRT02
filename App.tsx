@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import ResidentList from './components/ResidentList';
@@ -52,11 +53,14 @@ function App() {
 
   if (!user) {
     return (
-      <Login 
-        onLogin={handleLogin} 
-        users={users} 
-        onUpdateUser={handleUpdateUser} 
-      />
+      <>
+        <Login 
+          onLogin={handleLogin} 
+          users={users} 
+          onUpdateUser={handleUpdateUser} 
+        />
+        <SpeedInsights />
+      </>
     );
   }
 
@@ -86,6 +90,7 @@ function App() {
           </div>
         </main>
       </div>
+      <SpeedInsights />
     </div>
   );
 }
